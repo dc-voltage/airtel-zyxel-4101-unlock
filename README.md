@@ -10,6 +10,18 @@ A comprehensive, production-grade guide and automation framework to liberate the
 
 This repository provides full documentation of the reverse engineering process, root causes of carrier lock-in, solutions to vendor kernel crashes, firewall bypass scripts, and complete dual-stack IPv4/IPv6 routing (`464xlat`) configurations for networks such as **Reliance Jio True5G SA (n78 100MHz)**, **Airtel 5G**, **Vi**, and **BSNL**.
 
+<p align="center">
+  <img src="assets/luci_5g_overview.png" alt="OpenWrt LuCI 5G SA Status Overview" width="90%">
+  <br>
+  <b>Figure 1:</b> <em>OpenWrt LuCI Web GUI showing active Reliance Jio 5G NR SA connection on Band n78 (3500 MHz) with 464XLAT dual-stack routing.</em>
+</p>
+
+<p align="center">
+  <img src="assets/jio_5g_speedtest.png" alt="Ookla Speedtest on Jio 5G SA n78 100MHz" width="90%">
+  <br>
+  <b>Figure 2:</b> <em>Speedtest by Ookla benchmark delivering ~220 Mbps download on Jio True5G SA n78 over the unlocked F4101 gateway.</em>
+</p>
+
 ---
 
 ## Table of Contents
@@ -117,6 +129,9 @@ This repository provides full documentation of the reverse engineering process, 
 ## Repository Layout
 
 ```text
+├── assets/
+│   ├── luci_5g_overview.png       # Web GUI screenshot (5G SA n78 connected)
+│   └── jio_5g_speedtest.png       # Ookla speedtest benchmark (~220 Mbps)
 ├── README.md                      # Comprehensive guide and documentation
 ├── universal_cpe_unlock.sh        # Core automated deployment script
 ├── universal-cpe                  # OpenWrt init.d service (/etc/init.d/universal-cpe)
