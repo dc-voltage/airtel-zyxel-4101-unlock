@@ -1,0 +1,34 @@
+# Hardware dumps, partitions & sensitive diagnostic backups
+pulls/
+backups/
+*.img
+*.bin
+*.log
+*.tar
+*.gz
+
+# Cleartext credentials and local private notes
+root-password
+*password*
+aill method.md
+AIRTEL-A0D450-ODU-README.md
+security_analysis.md
+JIO-IPV4-464XLAT-FIX.md
+F4101-LUCI-INSTALL.md
+
+# Python cache & unmasked automation scripts
+__pycache__/
+*.pyc
+*.py
+!extract_ipks.py
+test-scripts/
+webui/
+luci-main-web
+lucistatic
+luci packets/
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

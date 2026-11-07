@@ -1,0 +1,29 @@
+#!/bin/sh /etc/rc.common
+# ==============================================================================
+# OpenWrt Service: Universal 5G CPE Unlock
+# Path: /etc/init.d/universal-cpe
+# Startup Priority: 98 (Runs after netifd and firewall)
+# ==============================================================================
+
+START=98
+STOP=10
+
+USE_PROCD=0
+
+start() {
+    echo "[+] Starting Universal 5G CPE Unlock service..."
+    if [ -x /usr/bin/universal_cpe_unlock.sh ]; then
+        /usr/bin/universal_cpe_unlock.sh >/dev/null 2>&1 &
+    fi
+}
+
+stop() {
+    echo "[+] Stopping Universal 5G CPE Unlock service..."
+    killall 464xlatcfg 2>/dev/null || true
+}
+
+restart() {
+    stop
+    sleep 1
+    start
+}
