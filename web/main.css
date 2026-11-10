@@ -277,17 +277,66 @@ input[type="file"]:focus{
 
 .contentheight_dashboard{ width:100%;height: 100%;}
 
-.mainMenu .menuList, .mainMenuInfo .menuList{display: flex;width:100%;justify-content:space-evenly;padding:0 }
-.mainMenu .menuList > li, .mainMenuInfo .menuList > li{display: inline-block;height:32px!important; position: relative; width: inherit;
-  cursor: pointer;margin-top:17px; text-align: center; color: #fff;}
-.mainMenu .menuList li > h2, .mainMenuInfo .menuList li > h2{ position: relative; z-index: 55; display: block;text-decoration: none;  color: #fff;  margin:0 15px; padding: 0px 0px 5px 0px;  font-size: 14px; }
-.mainMenu .menuList li:hover, .mainMenuInfo .menuList li:hover{ color:#ffe600;}
-.mainMenu .menuList li i, .mainMenuInfo .menuList li i{ position:relative;}
-.mainMenu .menuList > li:before, .mainMenuInfo .menuList > li:before{content: '';
-  border-left: 1px solid #1a1a1a; display: inline-block; width: -webkit-fill-available; height: 14px; position:absolute;left:0%;}
-
-.mainMenu .menuList > li:first-child:after,
-.mainMenuInfo .menuList > li:first-child:after{border-right: 0px solid #1a1a1a; }
+.TopMenu { 
+  background: #0075c9;
+  height: 48px;
+  min-height: 48px;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,117,201,0.25);
+  margin-bottom: 15px;
+  overflow: visible;
+  z-index: 990;
+}
+.mainMenu, .mainMenuInfo {
+  height: 48px;
+  line-height: 48px;
+  margin: 0;
+  padding: 0;
+}
+.mainMenu .menuList, .mainMenuInfo .menuList {
+  display: flex !important;
+  width: 100%;
+  height: 48px;
+  margin: 0 !important;
+  padding: 0 10px !important;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.mainMenu .menuList > li, .mainMenuInfo .menuList > li {
+  display: flex !important;
+  height: 48px !important;
+  position: relative;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-align: center;
+}
+.mainMenu .menuList li > h2, .mainMenuInfo .menuList li > h2 {
+  display: block !important;
+  margin: 0 !important;
+  padding: 6px 14px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 20px !important;
+  color: #ffffff !important;
+  text-decoration: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.mainMenu .menuList li:hover > h2, .mainMenuInfo .menuList li:hover > h2 {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff !important;
+}
+.mainMenu .menuList li > h2.active, .mainMenuInfo .menuList li > h2.active {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  border-bottom: 2px solid #ffffff !important;
+  font-weight: bold !important;
+}
 
 .dashboardStatus, .InfodashboardStatus {  width:100%; float: right; margin-top:0px; height: 25px;}
 .dashboardStatus ul, .InfodashboardStatus ul {float:right;}
