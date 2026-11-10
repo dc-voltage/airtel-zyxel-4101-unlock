@@ -29,11 +29,13 @@ This repository provides full documentation of the reverse engineering process, 
 1. [Hardware Specifications](#hardware-specifications)
 2. [Root Causes & Reverse Engineering Discoveries](#root-causes--reverse-engineering-discoveries)
    - [1. Jio 5G SA n78 Scanning Loop (RF Filter Limits & Bitmasks)](#1-jio-5g-sa-n78-scanning-loop)
-   - [2. `nat46` Kernel Panic & Crash Traps](#2-nat46-kernel-panic--crash-traps)
-   - [3. CPU Hang Watchdog & Mystery Reboots](#3-cpu-hang-watchdog--mystery-reboots)
-   - [4. Client Traffic Blockage (Airtel GRE & MAC Filters)](#4-client-traffic-blockage)
-   - [5. TCP MSS Fragmentation (MTU 1400 vs 16384)](#5-tcp-mss-fragmentation)
-   - [6. Persistent Blinking Red LED (Kernel DTS Bug)](#6-persistent-blinking-red-led)
+   - [2. `nat46` Inbound Routing Trap & Table `prelocal` Discovery](#2-nat46-inbound-routing-trap--table-prelocal-discovery)
+   - [3. Switch AN8855 Hardware L2 ACL Lock & Bypass](#3-switch-an8855-hardware-l2-acl-lock--bypass)
+   - [4. CPU Hang Watchdog & Mystery Reboots](#4-cpu-hang-watchdog--mystery-reboots)
+   - [5. Client Traffic Blockage (Airtel GRE & MAC Filters)](#5-client-traffic-blockage)
+   - [6. TCP MSS Fragmentation (MTU 1400 vs 16384)](#6-tcp-mss-fragmentation)
+   - [7. Persistent Blinking Red LED (Kernel DTS Bug)](#7-persistent-blinking-red-led)
+   - [8. Complete Zyxel Web GUI De-branding](#8-complete-zyxel-web-gui-de-branding)
 3. [Repository Layout](#repository-layout)
 4. [Step-by-Step Installation & Unlock](#step-by-step-installation--unlock)
 5. [Sanitized Script Templates](#sanitized-script-templates)
@@ -81,24 +83,45 @@ This repository provides full documentation of the reverse engineering process, 
 
 ---
 
-### 2. `nat46` Kernel Panic & Crash Traps
-* **Symptom:** Router crashes with a kernel Oops (`Internal error: Oops: 96000006 [#1] SMP - nat64_show_all_configs+0xdc/0x164 [nat46] Comm: grep`) and reboots every 2–3 minutes.
-* **Root Cause:** The vendor kernel's `nat46` translation module has a null pointer dereference bug when `/proc/net/nat46/control` is read or grepped while routes exist. Additionally, sending `echo 'del 464-clatd'` while routing rules are attached triggers a kernel BUG in `rollback_registered_many`.
-* **Fix:** **Never read or grep `/proc/net/nat46/control` in polling loops.** Use the native OpenWrt `/sbin/464xlatcfg` wrapper and remove default routes prior to interface reconfiguration:
+### 2. `nat46` Inbound Routing Trap & Table `prelocal` Discovery
+* **Symptom:** Outbound ping or HTTP packets leave the router encapsulated in IPv6 to Jio's NAT64 (`64:ff9b::...`). Jio sends replies back to the router's CLAT address (`local.v6`), but the replies are never delivered to `464-clatd`, resulting in 100% packet loss for IPv4.
+* **Root Cause:** Decompilation of `/lib/MSTC/libcccbe.so` revealed that OpenWrt's `464xlat.sh` expects the kernel rule `from all to <local.v6> lookup prelocal pref 0` to direct incoming packets into `table prelocal`. Because `table prelocal` lacked a direct route for `<local.v6>` to `464-clatd`, the kernel fell back to rule `1: from all lookup local`, which treated the packet as anycast on `lo` and dropped it before `nat46` could unwrap it.
+* **Fix:** Add a direct route in `table prelocal` targeting the `464-clatd` netdev:
   ```bash
-  /sbin/464xlatcfg 464-clatd <active_ccmni_interface> 64:ff9b::/96 192.0.0.1
+  CLAT_IP6=$(grep -o 'local.v6 [^/]*' /proc/net/nat46/control | awk '{print $2}')
+  ip -6 rule add from all lookup local pref 1
+  ip -6 rule add to "$CLAT_IP6" lookup prelocal pref 0
+  ip -6 route replace "$CLAT_IP6" dev 464-clatd table prelocal
   ```
 
 ---
 
-### 3. CPU Hang Watchdog & Mystery Reboots
+### 3. Switch AN8855 Hardware L2 ACL Lock & Bypass
+* **Symptom:** Even with all Linux `iptables` and `ebtables` flushed, connecting any non-Airtel router or PC to the LAN port results in immediate Ethernet packet drops.
+* **Root Cause:** Reverse engineering of `/usr/bin/SET_APLockingData.sh` revealed that the Airoha AN8855 hardware Ethernet switch was actively programmed with hardware L2 ACL rules:
+  ```text
+  switch an8855 acl set rule 100 1 0 1 0100000 2 smac <AIRTEL_MAC> ffffffffffff
+  switch an8855 acl set en 1
+  ```
+  The switch hardware drops all ingress frames whose source MAC does not match the whitelist.
+* **Fix:** Disable the global ACL on the AN8855 switch hardware, reset the whitelist, and neutralize the AP locking script:
+  ```bash
+  switch an8855 acl set en 0
+  greTool whitelist reset
+  echo 'exit 0' > /usr/bin/SET_APLockingData.sh
+  rm -f /app/AP_LOCKING /tmp/sysinfo/apLocking_list
+  ```
+
+---
+
+### 4. CPU Hang Watchdog & Mystery Reboots
 * **Symptom:** Router resets unexpectedly even with low CPU activity reported.
 * **Root Cause:** A vendor crontab entry was attempting to invoke `/bin/cmdsh -c ...`. Because Zyxel's restricted management CLI (`cmdsh`) does not implement the standard POSIX `-c` argument, it spawned background child processes in a 100% CPU spinning loop on all cores. MediaTek's hardware hang detector (`mtk_monitor_hang` and `wdtk`) detected the processor stall and triggered a hardware reset after 120 seconds.
 * **Fix:** Clean all `/etc/crontabs` entries to use standard `/bin/sh` and kill stuck `cmdsh` instances.
 
 ---
 
-### 4. Client Traffic Blockage
+### 5. Client Traffic Blockage
 * **Symptom:** Router shell can ping the internet, but connected devices (PCs, phones, Wi-Fi routers) on LAN have zero connectivity.
 * **Root Cause:** Airtel firmware implements multiple restrictive layers:
   1. **Bridge MAC Filtering:** `ebtables` was populated with rules dropping all Ethernet frames except for Airtel's proprietary indoor mesh router MAC addresses.
@@ -109,7 +132,7 @@ This repository provides full documentation of the reverse engineering process, 
 
 ---
 
-### 5. TCP MSS Fragmentation
+### 6. TCP MSS Fragmentation
 * **Symptom:** Pings work from clients, but web browsing / HTTPS fails (curl error 35: SSL connect error).
 * **Root Cause:** Cellular networks enforce an MTU of 1400 bytes. The virtual `464-clatd` interface defaults to an MTU of 16384 bytes. When client devices negotiate TLS, the TCP MSS is negotiated at ~1460 bytes. The cellular network drops packets exceeding 1400 bytes without generating ICMP fragmentation warnings.
 * **Fix:** Clamp TCP MSS to 1340 bytes in `iptables`:
@@ -119,10 +142,21 @@ This repository provides full documentation of the reverse engineering process, 
 
 ---
 
-### 6. Persistent Blinking Red LED
+### 7. Persistent Blinking Red LED
 * **Symptom:** The 5G status LED persistently blinks red, despite full 5G SA connectivity.
 * **Root Cause:** In the kernel Device Tree (`/sys/firmware/devicetree/base/gpio_leds/led0`), `led_5g_red` has its default trigger hardcoded to **`timer`** (blinking red). Airtel's vendor daemons (`ztr69`, `cm`) were designed to clear this trigger after contacting the carrier ACS.
 * **Fix:** Reset `led_5g_red` trigger to `none` (brightness 0), and enable `led_5g_green` (brightness 255) for solid green (online status).
+
+---
+
+### 8. Complete Zyxel Web GUI De-branding
+* **Symptom:** Web interface displayed Airtel logos, Airtel red palette, and carrier customer care contact numbers.
+* **Modifications Applied:**
+  1. Updated `/usr/shared/web/html/Airtel_FWA/js/project.js` model name to **Zyxel - NR7002 5G Outdoor Unit**.
+  2. Replaced `airtelLogo.png` and `Airtel_logo.svg` with high-resolution, transparent Zyxel vector logos.
+  3. Replaced proprietary "Airtel Sans" font definitions with modern system sans-serif typography.
+  4. Updated web page titles across all templates to **Zyxel NR7002 5G Outdoor Unit**.
+  5. Configured system hostname to `Zyxel-NR7002-5G` and installed clean ASCII banner in `/etc/banner`.
 
 ---
 
@@ -207,11 +241,20 @@ Execute the script manually for the first time:
 
 set -e
 
-echo "[+] Step 1: Neutralizing Carrier Daemons & Watchdogs..."
+echo "[+] Step 1: Disabling Airtel Carrier Daemons, Watchdogs & Remote TR-069..."
 chmod 000 /usr/bin/ztr69 /usr/bin/emdlogger1 /usr/sbin/HostsUpdater /usr/sbin/cm /usr/bin/scd 2>/dev/null || true
 echo "exit 0" > /usr/script/greMonitorAgent.sh 2>/dev/null || true
 echo "exit 0" > /usr/script/greTryToDoAgent.sh 2>/dev/null || true
 chmod +x /usr/script/greMonitorAgent.sh /usr/script/greTryToDoAgent.sh 2>/dev/null || true
+
+# Disable AP Locking scripts & remove restrictions
+echo 'exit 0' > /usr/bin/SET_APLockingData.sh 2>/dev/null || true
+chmod +x /usr/bin/SET_APLockingData.sh 2>/dev/null || true
+rm -f /app/AP_LOCKING /tmp/sysinfo/apLocking_list 2>/dev/null || true
+
+# Disable AN8855 Switch L2 ACL MAC Filtering permanently
+switch an8855 acl set en 0 2>/dev/null || true
+greTool whitelist reset 2>/dev/null || true
 
 # Disable baseband memory logger (Frees >80MB RAM)
 /etc/init.d/mdlogger disable 2>/dev/null || true
@@ -317,7 +360,7 @@ for conf in /etc/IPP_file/udhcpd.conf /etc/udhcpd.conf; do
     fi
 done
 
-echo "[+] Step 6: Initializing Cellular Connection & 464XLAT Gateway..."
+echo "[+] Step 6: Initializing 464XLAT (CLAT) & Carrier IPv6 Routing..."
 for i in $(seq 1 20); do
     state=$(ql_datacall --nw_radio_state_get 2>/dev/null || echo "0")
     [ "$state" = "2" ] && break
@@ -328,38 +371,47 @@ if ! ubus call network.interface.wan status 2>/dev/null | grep -q '"up": true'; 
     ifup wan 2>/dev/null || true
 fi
 
-for i in $(seq 1 15); do
-    if ip link show dev 464-clatd >/dev/null 2>&1; then
+# Detect active cellular interface
+ACT_IF=""
+for d in ccmni1 ccmni0 ccmni2 ccmni3; do
+    if ip -6 addr show dev "$d" 2>/dev/null | grep -q 'inet6 2409:'; then
+        ACT_IF="$d"
         break
     fi
-    sleep 1
 done
 
-if ! ip link show dev 464-clatd >/dev/null 2>&1; then
-    ACT_IF=""
-    for d in ccmni0 ccmni1 ccmni2 ccmni3; do
-        if ip -6 addr show dev "$d" 2>/dev/null | grep -q 'inet6 2409:'; then
-            ACT_IF="$d"
-            break
-        fi
-    done
-    if [ -n "$ACT_IF" ]; then
+if [ -n "$ACT_IF" ]; then
+    CLAT_IP6=$(grep -o 'local.v6 [^/]*' /proc/net/nat46/control 2>/dev/null | awk '{print $2}')
+    if [ -z "$CLAT_IP6" ] || ! ip link show dev 464-clatd >/dev/null 2>&1; then
+        echo del 464-clatd > /proc/net/nat46/control 2>/dev/null || true
         rm -f /var/run/464-clatd.pid 2>/dev/null || true
-        /sbin/464xlatcfg 464-clatd "$ACT_IF" 64:ff9b::/96 192.0.0.1 >/dev/null 2>&1 || true
-        sleep 2
+        CLAT_IP6=$(/sbin/464xlatcfg 464-clatd "$ACT_IF" 64:ff9b::/96 192.0.0.1 2>/dev/null || true)
+        sleep 1
+    fi
+    [ -z "$CLAT_IP6" ] && CLAT_IP6=$(grep -o 'local.v6 [^/]*' /proc/net/nat46/control 2>/dev/null | awk '{print $2}')
+
+    if [ -n "$CLAT_IP6" ]; then
+        ip -6 rule del pref 4200000001 2>/dev/null || true
+        ip -6 rule del iif 464-clatd failed_policy 2>/dev/null || true
+        ip -6 rule del iif "$ACT_IF" failed_policy 2>/dev/null || true
+
+        # Ensure prelocal routing directs inbound NAT64 replies into nat46 device
+        ip -6 rule del pref 0 2>/dev/null || true
+        ip -6 rule del pref 1 2>/dev/null || true
+        ip -6 rule add from all lookup local pref 1 2>/dev/null || true
+        ip -6 rule add to "$CLAT_IP6" lookup prelocal pref 0 2>/dev/null || true
+        ip -6 route replace "$CLAT_IP6" dev 464-clatd table prelocal 2>/dev/null || true
+
+        ip link set dev 464-clatd mtu 1400 2>/dev/null || true
+        ip link set dev 464-clatd up 2>/dev/null || true
+        ip addr add 192.0.0.1/32 dev 464-clatd 2>/dev/null || true
+        ip route replace default dev 464-clatd src 192.0.0.1 2>/dev/null || true
     fi
 fi
 
-if ip link show dev 464-clatd >/dev/null 2>&1; then
-    ip -6 rule del pref 4200000001 2>/dev/null || true
-    ip -6 rule del iif 464-clatd failed_policy 2>/dev/null || true
-    for d in ccmni0 ccmni1 ccmni2 ccmni3; do
-        ip -6 rule del iif "$d" failed_policy 2>/dev/null || true
-    done
-    ip link set dev 464-clatd mtu 1400 2>/dev/null || true
-    ip link set dev 464-clatd up 2>/dev/null || true
-    ip addr add 192.0.0.1/32 dev 464-clatd 2>/dev/null || true
-    ip route replace default dev 464-clatd src 192.0.0.1 2>/dev/null || true
+# Start background persistent health watchdog if not already running
+if ! ps | grep -v grep | grep -q 'odu_watchdog.sh'; then
+    /usr/bin/odu_watchdog.sh &
 fi
 
 # Set 5G Status LED to Solid Green
@@ -367,7 +419,7 @@ if [ -x /usr/bin/set_led.sh ]; then
     /usr/bin/set_led.sh green 2>/dev/null || true
 fi
 
-echo "[+] Universal 5G CPE Unlock Successfully Completed!"
+echo "[+] Universal Zyxel NR7002 Unlock Successfully Completed!"
 ```
 
 ---
