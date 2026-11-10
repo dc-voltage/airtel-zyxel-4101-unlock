@@ -4,6 +4,7 @@ FAIL_COUNT=0
 
 while true; do
     sleep 15
+    /usr/bin/update_cellular_status.sh >/dev/null 2>&1
     # Always keep AN8855 switch hardware ACL disabled
     switch an8855 acl set en 0 >/dev/null 2>&1
 
