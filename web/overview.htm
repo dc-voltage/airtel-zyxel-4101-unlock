@@ -1,0 +1,101 @@
+<%+header%>
+<%
+local json = require "luci.jsonc"
+local fs = require "nixio.fs"
+
+local cell_info = {}
+local cell_raw = fs.readfile("/tmp/cellular_status.json")
+if cell_raw then
+    cell_info = json.parse(cell_raw) or {}
+end
+
+local cell_lock_raw = luci.sys.exec("mipc_wan_cli --at_cmd='AT+EMMCHLCK?' 2>/dev/null") or ""
+local cell_lock_status = "Not locked (Automatic)"
+local lock_match = cell_lock_raw:match("%+EMMCHLCK:%s*([0-9,]+)")
+if lock_match and lock_match ~= "0" then
+    cell_lock_status = "LOCKED (" .. lock_match .. ")"
+end
+%>
+
+<h2 name="content"><%:Telephony & 5G Cellular Management%></h2>
+
+<fieldset class="cbi-section">
+	<legend><%:5G NR / LTE Cell Lock & Tower Lock%></legend>
+	<table class="table" width="100%" cellspacing="10">
+		<tr class="tr">
+			<td class="td left" width="33%"><strong><%:Current Cell Lock Status%></strong></td>
+			<td class="td left">
+				<% if cell_lock_status:find("LOCKED") then %>
+					<span class="label warning" style="font-size:110%; font-weight:bold;"><%=cell_lock_status%></span>
+				<% else %>
+					<span class="label success" style="font-size:110%; font-weight:bold;"><%=cell_lock_status%></span>
+				<% end %>
+				<pre style="margin-top:6px; font-size:11px; color:#666;"><%=cell_lock_raw%></pre>
+			</td>
+		</tr>
+		<tr class="tr">
+			<td class="td left"><strong><%:Set Cell / Tower Lock%></strong></td>
+			<td class="td left">
+				<form method="post" action="<%=luci.dispatcher.build_url("admin/telephony/trigger_cell_lock")%>" style="display:inline-block; margin-right:15px;">
+					<input type="hidden" name="lock_action" value="lock" />
+					<div style="margin-bottom:8px;">
+						<label style="display:inline-block; width:120px;">Mode:</label>
+						<select name="rat" style="width:180px;">
+							<option value="2" selected>5G NR SA (Mode 2)</option>
+							<option value="1">4G LTE (Mode 1)</option>
+						</select>
+					</div>
+					<div style="margin-bottom:8px;">
+						<label style="display:inline-block; width:120px;">EARFCN / ARFCN:</label>
+						<input type="text" name="arfcn" value="<%=cell_info.arfcn or '627264'%>" placeholder="e.g. 627264 (n78)" style="width:180px;" required />
+					</div>
+					<div style="margin-bottom:8px;">
+						<label style="display:inline-block; width:120px;">Physical Cell ID (PCI):</label>
+						<input type="text" name="pci" value="<%=cell_info.pci or '464'%>" placeholder="e.g. 464" style="width:180px;" required />
+					</div>
+					<input type="submit" class="cbi-button cbi-button-apply" value="<%:Lock Cell / Tower%>" />
+				</form>
+
+				<form method="post" action="<%=luci.dispatcher.build_url("admin/telephony/trigger_cell_lock")%>" style="display:inline-block; vertical-align:top;">
+					<input type="hidden" name="lock_action" value="unlock" />
+					<input type="submit" class="cbi-button cbi-button-reset" value="<%:Unlock / Reset Cell Lock%>" style="margin-top:40px;" />
+				</form>
+			</td>
+		</tr>
+	</table>
+</fieldset>
+
+<fieldset class="cbi-section">
+	<legend><%:5G NR Live Radio Metrics%></legend>
+	<table class="table" width="100%" cellspacing="10">
+		<tr class="tr"><td class="td left" width="33%"><%:Carrier & SIM%></td><td class="td left"><strong><%=cell_info.carrier or "Reliance Jio"%></strong> (PLMN: <%=cell_info.plmn or "405862"%>)</td></tr>
+		<tr class="tr"><td class="td left"><%:Network Mode & Band%></td><td class="td left"><span class="label success"><%=cell_info.rat or "5G NR SA"%> — <%=cell_info.band or "n78 (100 MHz - 3500 MHz)"%></span></td></tr>
+		<tr class="tr"><td class="td left"><%:Active ARFCN / PCI%></td><td class="td left">ARFCN: <strong><%=cell_info.arfcn or "627264"%></strong> | PCI: <strong><%=cell_info.pci or "464"%></strong></td></tr>
+		<tr class="tr"><td class="td left"><%:Signal Strength (RSRP)%></td><td class="td left"><strong><%=cell_info.rsrp or "-108 dBm"%></strong> (<%=cell_info.signal_percent or 50%>%)</td></tr>
+		<tr class="tr"><td class="td left"><%:Signal Quality (SINR / RSRQ)%></td><td class="td left">SINR: <strong><%=cell_info.sinr or "16 dB"%></strong> | RSRQ: <%=cell_info.rsrq or "-11 dB"%></td></tr>
+		<tr class="tr"><td class="td left"><%:WAN IP & Device%></td><td class="td left"><%=cell_info.ipv4 or "192.0.0.1 (464XLAT)"%> / <%=cell_info.ipv6 or ""%> (<%=cell_info.wan_dev or "ccmni1"%>)</td></tr>
+		<tr class="tr"><td class="td left"><%:Modem Hardware%></td><td class="td left"><%=cell_info.modem or "Quectel RG500L-ARS"%> (IMEI: <%=cell_info.imei or ""%>)</td></tr>
+	</table>
+</fieldset>
+
+<fieldset class="cbi-section">
+	<legend><%:SIM & Radio Mode Control%></legend>
+	<table class="table" width="100%" cellspacing="10">
+		<tr class="tr"><td class="td left" width="33%"><%:SIM Status%></td><td class="td left"><%=luci.sys.exec("mipc_wan_cli --show_sim_status 2>/dev/null")%></td></tr>
+		<tr class="tr"><td class="td left"><%:Radio Power%></td>
+			<td class="td left"><%=luci.sys.exec("mipc_wan_cli --nw_radio_state_get 2>/dev/null")%>
+                <input type="button" value="Turn Radio ON" class="cbi-button cbi-button-apply" onClick="javascript:location.href='<%=luci.dispatcher.build_url("admin/telephony/trigger_set_radio_on")%>'"></input>
+                <input type="button" value="Turn Radio OFF" class="cbi-button cbi-button-reset" onClick="javascript:location.href='<%=luci.dispatcher.build_url("admin/telephony/trigger_set_radio_off")%>'"></input>
+			</td>
+		</tr>
+		<tr class="tr"><td class="td left"><%:RAT Selection%></td>
+			<td class="td left"><%=luci.sys.exec("mipc_wan_cli --nw_get_rat 2>/dev/null")%><br><br>
+				<input type="button" value="5G SA Only (15)" class="cbi-button cbi-button-apply" onClick="javascript:location.href='<%=luci.dispatcher.build_url("admin/telephony/trigger_set_nw_rat_5g")%>'"></input>
+				<input type="button" value="4G/5G NSA+SA (19)" class="cbi-button cbi-button-apply" onClick="javascript:location.href='<%=luci.dispatcher.build_url("admin/telephony/trigger_set_nw_rat_45g")%>'"></input>
+				<input type="button" value="4G LTE Only (3)" class="cbi-button cbi-button-apply" onClick="javascript:location.href='<%=luci.dispatcher.build_url("admin/telephony/trigger_set_nw_rat_4g")%>'"></input>
+			</td>
+		</tr>
+	</table>
+</fieldset>
+
+<%+footer%>

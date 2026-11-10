@@ -553,10 +553,11 @@ iptables -t mangle -I FORWARD 1 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-m
 **A:** The kernel Device Tree defaults to `timer` mode for the red LED. Run `/usr/bin/set_led.sh green` or ensure `/usr/bin/universal_cpe_unlock.sh` completes execution.
 
 #### Q3: Can I access the LuCI Web Interface?
-**A:** Yes. The web server runs on port 80/443. If redirected to vendor login, access directly at:
+**A:** Yes! The vendor web UI has been fully bypassed and replaced with native **Pure OpenWrt LuCI** on default ports `80` (HTTP) and `443` (HTTPS). Navigating directly to:
 ```text
-http://192.168.0.1/cgi-bin/luci/
+http://192.168.0.1/
 ```
+instantly opens native OpenWrt LuCI with the responsive Bootstrap theme and dark mode support. Cellular signal metrics and 5G Tower Locking (`AT+EMMCHLCK`) are accessible under **Status -> Overview** and **Telephony -> Overview**.
 
 ---
 
