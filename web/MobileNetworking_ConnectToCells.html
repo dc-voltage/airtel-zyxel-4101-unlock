@@ -1,0 +1,672 @@
+<!doctype html>
+<html>
+<!-- #BEGINZONE output_head_zone -->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="HandheldFriendly" content="true">
+  <title>Zyxel NR7002 5G</title>
+  <link rel="icon" href="../../html/Airtel_FWA/img/favicon.ico" type="image/x-icon" />
+  <link href="../../html/Airtel_FWA/css/bootstrap.css" rel="stylesheet" type="text/css">
+  <link href="../../html/Airtel_FWA/css/main.css" rel="stylesheet" type="text/css">
+  <link href="../../html/Airtel_FWA/css/responsive.css" rel="stylesheet" type="text/css">
+</head>
+<!-- #ENDZONE output_head_zone -->
+<!-- #BEGINZONE output_body_zone -->
+<body>
+  <!--Mobile left MENU START-->
+  <div class="mleftMenu">
+    <div class="mMenulogo"></div>
+  </div>
+  <!--Mobile left MENU END-->
+  <div class="container-fluid contentheight">
+    <div class="subtract-row-xs dashboardTitleHeight">
+      <div class="col-sm-3 col-xs-1 col-xs-margin-top-15 col-sm-margin-top-10 visible-xs visible-sm"> 
+        <a class="mobileButton" id="hamburger-icon" href="#" title="Menu">
+          <span class="line line-1"></span>
+          <span class="line line-2"></span>
+          <span class="line line-3"></span>
+        </a>
+      </div>
+      <div class="col-sm-4 col-xs-2 hidden-xs hidden-sm">
+        <div class="logo"></div>
+      </div>
+      <div class="col-sm-4 col-lg-4 col-xs-12 col-lg-margin-top-20 col-xs-margin-top-15 col-sm-margin-top-20">
+        <!--Top Status-->
+        <div class="TopMiddle" id="idDiv_SignalArea" style="display: ##SignalStrength_Enable##;">
+          <div id="idDiv_SignalBar" class="signal-bars sizing-box good">
+            <div class="bar-1 bar" id="bar1"></div>
+            <div class="bar-2 bar" id="bar2"></div>
+            <div class="bar-3 bar" id="bar3"></div>
+            <div class="bar-4 bar" id="bar4"></div>
+          </div>
+         <p id="idDiv_SignalTitle">##ACCESS_TECH##</p>
+         <p id="idDiv_SignalSubtitle"></p><span class="wps"></span>
+        </div>
+      </div>
+      <div class="col-sm-4 col-lg-4 col-lg-margin-top-20 col-sm-margin-top-20 m-logout">
+        <!--Top Status-->
+        <div class="dashboardStatus status"></div>
+      </div>
+    </div>
+    <!--row dashboardTitleHeight end-->
+    <div class="contentGrayBk">
+      <div class="TopMenu hidden-xs hidden-sm">
+        <div class="mainMenu"></div>
+        <!--topMENU END-->
+      </div>
+      <div class="clearfix"></div>
+      <!-- content -->
+      <div class="set-relative content-config contentPpage">
+        <div class="col-12 height100">
+          <div class="set-relative box-shadow-con height100 background-white">
+            <div class="config-lg-left height100 set-absolute hidden-xs hidden-sm">
+              <!--left MENU START-->
+              <div class="subMenu"></div>
+              <!--left MENU END-->
+            </div>
+            <div class="config-lg-right height100 content-cofigHeight">
+              <div class="config-lg-right-content">
+                <div class="col-lg-12 col-xs-margin-top-10 col-sm-height25">
+                  <div class="main-block">
+                    <h3 class="breadcrumb">Connect to Cells</h3>
+                  </div>
+                </div>
+
+                <div class="col-lg-12 col-sm-height25 col-xs-margin-top-10 text-center">
+                  <table style="text-align:center;" >
+                    <thead>
+                      <tr>
+                        <th scope="col">Cell</th>
+                        <th scope="col">Network</th>
+                        <th scope="col">ECI/NCI</th>
+                        <th scope="col">PCI</th>
+                        <th scope="col">
+							<p Align="Center">Band</p> 
+							<p Align="Center">Bandwidth</p>
+						</th>
+                        <th scope="col">
+							<p Align="Center">EARFCN/</p>
+							<p Align="Center">NR-ARFCN</p>
+						</th>
+                        <th scope="col">
+							<p Align="Center">RSRP</p>
+							<p Align="Center">RSRQ</p>
+							<p Align="Center">SINR</p>
+						</th>
+                        <th scope="col">Signal</th>
+                      </tr>
+                    </thead>
+
+                    <tbody id="idtbody_4GCell">
+                      <tr class="tableBgBlue" id="idTR_4G_PCell">
+                        <td data-label="Cell" id="idTD_4G_Cell" ></td>
+                        <td data-label="Network" id="idTD_4G_Network"></td>
+                        <td data-label="DIC/ NCI" id="idTD_4G_DIC_NCI"></td>
+                        <td data-label="PCI" id="idTD_4G_PCI"></td>
+                        <td data-label="Band/ Bandwidth">
+							<p Align="Center" id="idP_Band4G"></p>
+							<p Align="Center" id="idP_Bandwidth4G"></p>
+                        </td>
+                        <td data-label="EARFCN/NR-ARFCN" id="idTD_4G_EARFCN"></td>
+                        <td data-label="RSRP/RSRQ/SINR">
+							<p Align="Center" id="idP_4G_RSRP"></p>
+							<p Align="Center" id="idP_4G_RSRQ"></p>
+							<p Align="Center" id="idP_4G_SINR"></p>
+                        </td>
+                        <td data-label="Signal" id="idTD_4G_Signal"></td>
+                      </tr>
+					</tbody>
+					<tbody id="idtbody_5GCell">
+                      <tr class="tableBgGreen" id="idTR_5G_PCell">
+                        <td data-label="Cell" id="idTD_5G_Cell"></td>
+                        <td data-label="Network" id="idTD_5G_Network"></td>
+                        <td data-label="DIC/ NCI" id="idTD_5G_DIC_NCI"></td>
+                        <td data-label="PCI" id="idTD_5G_PCI"></td>
+                        <td data-label="Band/ Bandwidth">
+							<p Align="Center" id="idP_Band5G"></p>
+							<p Align="Center" id="idP_Bandwidth5G"></p>
+                        </td>
+                        <td data-label="EARFCN/NR-ARFCN" id="idTD_5G_EARFCN"></td>
+                        <td data-label="RSRP/RSRQ/SINR">
+							<p Align="Center" id="idP_5G_RSRP"></p>
+							<p Align="Center" id="idP_5G_RSRQ"></p>
+							<p Align="Center" id="idP_5G_SINR"></p>
+                        </td>
+                        <td data-label="Signal"id="idTD_5G_Signal"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                </div>
+
+                <!-- Zyxel Enterprise 5G Tower & Band Lock Engine -->
+                <div class="col-lg-12 col-xs-margin-top-20" style="margin-top: 25px; margin-bottom: 25px; padding: 22px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                  <div style="border-bottom: 2px solid #0075c9; padding-bottom: 8px; margin-bottom: 16px;">
+                    <h4 style="color: #0075c9; margin: 0; font-weight: bold; font-size: 16px;">
+                      Enterprise 5G NR Cell Tower & Frequency Lock Console
+                    </h4>
+                  </div>
+                  <p style="color: #475569; font-size: 13px; margin-bottom: 18px; line-height: 1.5;">
+                    Direct MediaTek T750 baseband lock. Lock the Quectel RG500L-ARS to a designated 5G NR Cell (PCI & ARFCN) or restrict Radio Access Technology (RAT) to prevent unwanted band switching.
+                  </p>
+                  
+                  <div class="row" style="margin-bottom: 15px;">
+                    <div class="col-sm-4 col-xs-12" style="margin-bottom: 10px;">
+                      <label style="font-weight: 600; font-size: 13px; color: #334155;">Target ARFCN (e.g. Jio n78: 627264)</label>
+                      <input type="number" id="idInput_ARFCN" class="form-control" value="627264" style="height: 38px; border-radius: 4px; border: 1px solid #94a3b8;">
+                    </div>
+                    <div class="col-sm-4 col-xs-12" style="margin-bottom: 10px;">
+                      <label style="font-weight: 600; font-size: 13px; color: #334155;">Target PCI (Physical Cell ID, e.g. 464)</label>
+                      <input type="number" id="idInput_PCI" class="form-control" value="464" style="height: 38px; border-radius: 4px; border: 1px solid #94a3b8;">
+                    </div>
+                    <div class="col-sm-4 col-xs-12" style="margin-bottom: 10px;">
+                      <label style="font-weight: 600; font-size: 13px; color: #334155;">Radio Access Mode (RAT)</label>
+                      <select id="idSelect_RAT" class="form-control" style="height: 38px; border-radius: 4px; border: 1px solid #94a3b8;">
+                        <option value="5g_sa">5G NR SA Only (Band n78 / n28)</option>
+                        <option value="5g_all">5G SA + NSA Auto</option>
+                        <option value="lte_5g">LTE 4G + 5G NR</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <button type="button" id="idBtn_LockTower" class="btn" style="background-color: #0075c9; color: #fff; padding: 9px 22px; font-weight: 600; border-radius: 4px; margin-right: 10px; margin-bottom: 8px;">
+                        Lock Tower (PCI & ARFCN)
+                      </button>
+                      <button type="button" id="idBtn_UnlockTower" class="btn btn-default" style="padding: 9px 22px; font-weight: 600; border-radius: 4px; border: 1px solid #94a3b8; margin-right: 10px; margin-bottom: 8px;">
+                        Reset to Auto (Unlock)
+                      </button>
+                      <button type="button" id="idBtn_ApplyRAT" class="btn" style="background-color: #0284c7; color: #fff; padding: 9px 22px; font-weight: 600; border-radius: 4px; margin-bottom: 8px;">
+                        Set RAT Mode
+                      </button>
+                    </div>
+                  </div>
+
+                  <div id="idDiv_LockFeedback" style="display: none; margin-top: 15px; padding: 12px; border-radius: 4px; font-size: 13px; font-weight: bold;"></div>
+                </div>
+
+
+              </div>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div><!-- content END -->
+      <div class="clearfix"></div>
+    </div> <!-- contentGrayBk END -->
+    <div class="clearfix visible-xs"></div>
+    <footer class="dashboardFooter">
+      <div class="footerCopyright"></div>
+    </footer>
+  </div><!--container-fluid contentheight end-->
+  <input id="inP_4G_SCell_NU" type="hidden" value="0">
+  <input id="inP_5G_SCell_NU" type="hidden" value="0">
+  
+  <div id="Div_StatusArea" style="visibility:hidden">
+	
+	<input id="InSignal_Title" type="hidden" value="##SYSIN_ACCESS_TECH##">
+	<input id="InSignal_Status" type="hidden" value="##SYSIN_SIGNAL_LEVEL##">
+	
+	<input id="In4G_CELL" type="hidden" value="##SYSIN_4G_CELL##">
+	<input id="In4G_Network" type="hidden" value="##SYSIN_4G_Network##">
+	<input id="In4G_DCI_NCI" type="hidden" value="##SYSIN_4G_DCI_NCI##">
+	<input id="In4G_PCI" type="hidden" value="##SYSIN_4G_PCI##">
+	
+	<input id="In4G_BAND" type="hidden" value="##SYSIN_BAND_4G##">
+	<input id="In4G_BANDWIDTH" type="hidden" value="##SYSIN_BANDWIDTH_4G##">
+	
+	<input id="In4G_EARFCN" type="hidden" value="##SYSIN_4G_EARFCN##">
+	
+	<input id="In4G_RSRP" type="hidden" value="##SYSIN_4G_RSRP##">
+	<input id="In4G_RSRQ" type="hidden" value="##SYSIN_4G_RSRQ##">
+	<input id="In4G_SINR" type="hidden" value="##SYSIN_4G_SINR##">
+	
+	<input id="In4G_Signal" type="hidden" value="##SYSIN_4G_Signal##">
+	
+	<input id="In5G_CELL" type="hidden" value="##SYSIN_5G_CELL##">
+	<input id="In5G_Network" type="hidden" value="##SYSIN_5G_Network##">
+	<input id="In5G_DCI_NCI" type="hidden" value="##SYSIN_5G_DCI_NCI##">
+	<input id="In5G_PCI" type="hidden" value="##SYSIN_5G_PCI##">
+	
+	<input id="In5G_BAND" type="hidden" value="##SYSIN_BAND_5G##">
+	<input id="In5G_BANDWIDTH" type="hidden" value="##SYSIN_BANDWIDTH_5G##">
+	
+	<input id="In5G_EARFCN" type="hidden" value="##SYSIN_5G_EARFCN_NRARFCN##">
+
+	<input id="In5G_RSRP" type="hidden" value="##SYSIN_5G_RSRP##">
+	<input id="In5G_RSRQ" type="hidden" value="##SYSIN_5G_RSRQ##">
+	<input id="In5G_SINR" type="hidden" value="##SYSIN_5G_SINR##">
+	
+	<input id="In5G_Signal" type="hidden" value="##SYSIN_5G_Signal##">
+	
+ </div>
+
+</body>
+<!-- #ENDZONE output_body_zone -->
+
+<!-- #BEGINZONE output_javascript_zone -->
+<script src="../../html/Airtel_FWA/js/jquery-2.2.4.min.js"></script>
+<script src="../../html/Airtel_FWA/js/bootstrap.min.js"></script>
+<script src="../../html/Airtel_FWA/js/customize.js"></script>
+<script src="../../html/Airtel_FWA/js/menuDef.js"></script>
+<script src="../../html/Airtel_FWA/menuJson.js"></script>
+
+<script>
+	var reloadConnect2CellsTimer = null;
+	function StatusReloadTimer() {
+		if(reloadConnect2CellsTimer)
+		{
+			clearTimeout(reloadConnect2CellsTimer);
+		}
+		reloadConnect2CellsTimer = setTimeout(function(){
+			var StatusInfo=$("#Div_StatusArea");
+			if(StatusInfo.length > 0)
+			{
+				var url_status="/cgi-bin/MobileNetworking_ConnectToCells.cgi"
+				StatusInfo.load(url_status,{getinfo: 1},function(responseText, textStatus) {
+					if(textStatus == "success") 
+					{
+						StatusInfo.load(responseText);
+						setCellValue();
+					}
+			
+					if(textStatus == "error") {}
+				});
+				StatusReloadTimer();
+			}
+			else
+			{
+				clearTimeout(reloadConnect2CellsTimer);
+			}
+			
+		},15000);
+	}
+
+	function setCellValue()
+	{
+		TITEL_SignalShow();
+		
+		// ----------<4G>----------
+		
+		var iStr4G_CEll=$('#In4G_CELL').val();
+		var iStr4G_Network=$('#In4G_Network').val();
+		var iStr4G_DCI_NCU=$('#In4G_DCI_NCI').val();
+		var isNaN4G_DCI_NCU = parseInt(iStr4G_DCI_NCU, 16);
+		if (! isNaN(isNaN4G_DCI_NCU)) 
+		{
+			iStr4G_DCI_NCU = isNaN4G_DCI_NCU;
+		}
+		
+		var iStr4G_PCI=$('#In4G_PCI').val();
+		var iStr4G_BAND=$('#In4G_BAND').val();
+		var iStr4G_WBAND=$('#In4G_BANDWIDTH').val();
+		var iStr4G_EARFCN=$('#In4G_EARFCN').val();
+		var iStr4G_RSRP=$('#In4G_RSRP').val();
+		var iStr4G_RSRQ=$('#In4G_RSRQ').val();
+		var iStr4G_SINR=$('#In4G_SINR').val();
+		var iStr4G_SIG=$('#In4G_Signal').val();
+		
+		var strArray4G_PCI= new Array();
+		var strArray4G_BAND= new Array();
+		var strArray4G_WBAND= new Array();
+		var strArray4G_EARFCN= new Array();
+		var strArray4G_RSRP= new Array();
+		var strArray4G_RSRQ= new Array();
+		var strArray4G_SINR= new Array();
+		
+		strArray4G_PCI=iStr4G_PCI.split(",");
+		strArray4G_BAND=iStr4G_BAND.split(",");
+		strArray4G_WBAND=iStr4G_WBAND.split(",");
+		strArray4G_EARFCN=iStr4G_EARFCN.split(",");
+		strArray4G_RSRP=iStr4G_RSRP.split(",");
+		strArray4G_RSRQ=iStr4G_RSRQ.split(",");
+		strArray4G_SINR=iStr4G_SINR.split(",");
+		
+		if ($('#idTD_4G_Cell').length > 0){$('#idTD_4G_Cell').text(iStr4G_CEll);}
+		if ($('#idTD_4G_Network').length > 0){$('#idTD_4G_Network').text(iStr4G_Network);}
+		if ($('#idTD_4G_DIC_NCI').length > 0){$('#idTD_4G_DIC_NCI').text(iStr4G_DCI_NCU);}
+		
+		if ($('#idTD_4G_PCI').length > 0){
+			//$('#idTD_4G_PCI').text(iStr4G_PCI);
+			if(strArray4G_PCI.length > 0){$('#idTD_4G_PCI').text(strArray4G_PCI[0].trim());}
+			else {$('#idTD_4G_PCI').text(iStr4G_PCI);}
+		}
+		
+		if ($('#idP_Band4G').length > 0){
+			if(strArray4G_BAND.length > 0){$('#idP_Band4G').text(strArray4G_BAND[0].trim());}
+			else {$('#idP_Band4G').text(iStr4G_BAND);}
+		}
+		if ($('#idP_Bandwidth4G').length > 0){
+			if(strArray4G_WBAND.length > 0){$('#idP_Bandwidth4G').text(strArray4G_WBAND[0].trim());}
+			else { $('#idP_Bandwidth4G').text(iStr4G_WBAND);}
+		}
+		
+		if ($('#idTD_4G_EARFCN').length > 0){
+			if(strArray4G_EARFCN.length > 0){$('#idTD_4G_EARFCN').text(strArray4G_EARFCN[0].trim());}
+			else {$('#idTD_4G_EARFCN').text(iStr4G_EARFCN);}
+		}
+		
+		if ($('#idP_4G_RSRP').length > 0){
+			if(strArray4G_RSRP.length > 0){$('#idP_4G_RSRP').text(strArray4G_RSRP[0].trim()+" dBm");}
+			else {$('#idP_4G_RSRP').text(iStr4G_RSRP+" dBm");}
+		}
+		
+		if ($('#idP_4G_RSRQ').length > 0){
+			if(strArray4G_RSRQ.length > 0){$('#idP_4G_RSRQ').text(strArray4G_RSRQ[0].trim()+" dB");}
+			else {$('#idP_4G_RSRQ').text(iStr4G_RSRQ+" dB");}
+		}
+		if ($('#idP_4G_SINR').length > 0){
+			if(strArray4G_SINR.length > 0){$('#idP_4G_SINR').text(strArray4G_SINR[0].trim()+" dB");}
+			else {$('#idP_4G_SINR').text(iStr4G_SINR+" dB");}
+		}
+		
+		if ($('#idTD_4G_Signal').length > 0){$('#idTD_4G_Signal').text(iStr4G_SIG);}
+		
+		var SCell_4G_Number = parseInt($('#inP_4G_SCell_NU').val(), 10);
+		var loop4G=strArray4G_BAND.length-1;
+		$('#inP_4G_SCell_NU').val(loop4G);
+		if(SCell_4G_Number > loop4G)
+		{
+			loop4G=SCell_4G_Number
+		}
+		
+		
+		for (i=1;i<=loop4G ;i++ )
+		{
+			//console.log(">>>>loop 4GScell="+i);
+			var tag="idTr_4GSCell_"+i;
+			var FindID="#"+tag;
+			if(i >= strArray4G_BAND.length)
+			{
+				//console.log(">>>>del 4GScell="+i);
+				if($(FindID).length > 0){ $(FindID).remove(); }
+			}
+			else
+			{
+				var iStrSCell4G_BAND=strArray4G_BAND[i].trim();
+				var iStrSCell4G_PCI=strArray4G_PCI[0].trim();
+				var iStrSCell4G_WBAND=strArray4G_WBAND[0].trim();
+				var iStrSCell4G_EARFCN=strArray4G_EARFCN[0].trim();
+				var iStrSCell4G_RSRP=strArray4G_RSRP[0].trim();
+				var iStrSCell4G_RSRQ=strArray4G_RSRQ[0].trim();
+				var iStrSCell4G_SINR=strArray4G_SINR[0].trim();
+		
+				//console.log(">>>>del 4GScell-BAND["+i+"]["+iStrSCell4G_BAND+"]");
+				if(strArray4G_PCI.length > i){iStrSCell4G_PCI=strArray4G_PCI[i].trim();}
+				if(strArray4G_WBAND.length > i){iStrSCell4G_WBAND=strArray4G_WBAND[i].trim();}
+				if(strArray4G_EARFCN.length > i){iStrSCell4G_EARFCN=strArray4G_EARFCN[i].trim();}
+				if(strArray4G_RSRP.length > i){iStrSCell4G_RSRP=strArray4G_RSRP[i].trim();}
+				if(strArray4G_RSRQ.length > i){iStrSCell4G_RSRQ=strArray4G_RSRQ[i].trim();}
+				if(strArray4G_SINR.length > i){iStrSCell4G_SINR=strArray4G_SINR[i].trim();}
+				
+				//console.log("=>4G_SCELL"+i+":"+strArray4G_BAND+","+iStrSCell4G_BAND+","+iStrSCell4G_EARFCN+","+iStrSCell4G_RSRP+","+iStrSCell4G_RSRQ+","+iStrSCell4G_SINR);
+				
+				if($(FindID).length > 0)
+				{
+					//console.log(">>>>update 4GScell="+i);
+					
+					var tagS_BAND="id_4GSCell_TD_B"+i;
+					var tagS_WBAND="id_4GSCell_TD_W"+i;
+					var tagS_EARFCN="id_4GSCell_TD_E"+i;
+					var tagS_RSRP="id_4GSCell_TD_P"+i;
+					var tagS_RSRQ="id_4GSCell_TD_Q"+i;
+					var tagS_SINR="id_4GSCell_TD_R"+i;
+					
+					var FindSID_Network="#"+"id_4GSCell_TD_N"+i;
+					var FindSID_DICNCI="#"+"id_4GSCell_TD_D"+i;
+					var FindSID_PCI="#"+"id_4GSCell_TD_I"+i;
+					
+					var FindSID_BAND="#"+tagS_BAND;
+					var FindSID_WBAND="#"+tagS_WBAND;
+					var FindSID_EARFCN="#"+tagS_EARFCN;
+					var FindSID_RSRP="#"+tagS_RSRP;
+					var FindSID_RSRQ="#"+tagS_RSRQ;
+					var FindSID_SINR="#"+tagS_SINR;
+					
+					if($(FindSID_Network).length > 0){ $(FindSID_Network).text(iStr4G_Network); }
+					if($(FindSID_DICNCI).length > 0){ $(FindSID_DICNCI).text(iStr4G_DCI_NCU); }
+					if($(FindSID_PCI).length > 0){ $(FindSID_PCI).text(iStrSCell4G_PCI); }
+					
+					if($(FindSID_BAND).length > 0){ $(FindSID_BAND).text(iStrSCell4G_BAND); }
+					if($(FindSID_WBAND).length > 0){ $(FindSID_WBAND).text(iStrSCell4G_WBAND); }
+					if($(FindSID_EARFCN).length > 0){ $(FindSID_EARFCN).text(iStrSCell4G_EARFCN); }
+					if($(FindSID_RSRP).length > 0){ $(FindSID_RSRP).text(iStrSCell4G_RSRP+" dBm"); }
+					if($(FindSID_RSRQ).length > 0){ $(FindSID_RSRQ).text(iStrSCell4G_RSRQ+" dB"); }
+					if($(FindSID_SINR).length > 0){ $(FindSID_SINR).text(iStrSCell4G_SINR+" dB"); }
+				}
+				else
+				{
+					//console.log(">>>>add 4GScell="+i);
+					$("#idtbody_4GCell").append(
+						'<tr class="tableBgWhite" id="idTr_4GSCell_'+i+'" >\
+						<td data-label="Cell" id="id_4GSCell_TD_C'+i+'" >SCell</td>\
+						<td data-label="Network" id="id_4GSCell_TD_N'+i+'">'+iStr4G_Network+'</td>\
+						<td data-label="DIC/ NCI" id="id_4GSCell_TD_D'+i+'">'+iStr4G_DCI_NCU+'</td>\
+						<td data-label="PCI" id="id_4GSCell_TD_I'+i+'">'+iStrSCell4G_PCI+'</td>\
+						<td data-label="Band/ Bandwidth">\
+						<p Align="Center" id="id_4GSCell_TD_B'+i+'">'+iStrSCell4G_BAND+'</p>\
+						<p Align="Center" id="id_4GSCell_TD_W'+i+'">'+iStrSCell4G_WBAND+'</p>\
+						</td>\
+						<td data-label="EARFCN/NR-ARFCN" id="id_4GSCell_TD_E'+i+'">'+iStrSCell4G_EARFCN+'</td>\
+						<td data-label="RSRP/RSRQ/SINR">\
+						<p Align="Center" id="id_4GSCell_TD_P'+i+'">'+iStrSCell4G_RSRP+' dBm </p>\
+						<p Align="Center" id="id_4GSCell_TD_Q'+i+'">'+iStrSCell4G_RSRQ+' dB</p>\
+						<p Align="Center" id="id_4GSCell_TD_R'+i+'">'+iStrSCell4G_SINR+' dB</p>\
+						</td>\
+						<td data-label="Signal" ></td>\
+						</tr>'
+					);
+				}
+			}
+		}
+		
+		
+		// ----------<5G>----------
+		
+		var iStr5G_CEll=$('#In5G_CELL').val();
+		var iStr5G_Network=$('#In5G_Network').val();
+		var iStr5G_DCI_NCU=$('#In5G_DCI_NCI').val();
+		var isNaN5G_DCI_NCU = parseInt(iStr5G_DCI_NCU, 16);
+		if (! isNaN(isNaN5G_DCI_NCU)) 
+		{
+			iStr5G_DCI_NCU = isNaN5G_DCI_NCU;
+		}
+		
+		var iStr5G_PCI=$('#In5G_PCI').val();
+		var iStr5G_BAND=$('#In5G_BAND').val();
+		var iStr5G_WBAND=$('#In5G_BANDWIDTH').val();
+		var iStr5G_EARFCN=$('#In5G_EARFCN').val();
+		var iStr5G_RSRP=$('#In5G_RSRP').val();
+		var iStr5G_RSRQ=$('#In5G_RSRQ').val();
+		var iStr5G_SINR=$('#In5G_SINR').val();
+		var iStr5G_SIG=$('#In5G_Signal').val();
+		
+		var strArray5G_PCI= new Array();
+		var strArray5G_BAND= new Array();
+		var strArray5G_WBAND= new Array();
+		var strArray5G_EARFCN= new Array();
+		var strArray5G_RSRP= new Array();
+		var strArray5G_RSRQ= new Array();
+		var strArray5G_SINR= new Array();
+		
+		strArray5G_PCI=iStr5G_PCI.split(",");
+		strArray5G_BAND=iStr5G_BAND.split(",");
+		strArray5G_WBAND=iStr5G_WBAND.split(",");
+		strArray5G_EARFCN=iStr5G_EARFCN.split(",");
+		strArray5G_RSRP=iStr5G_RSRP.split(",");
+		strArray5G_RSRQ=iStr5G_RSRQ.split(",");
+		strArray5G_SINR=iStr5G_SINR.split(",");
+		
+		if ($('#idTD_5G_Cell').length > 0){$('#idTD_5G_Cell').text(iStr5G_CEll);}
+		if ($('#idTD_5G_Network').length > 0){$('#idTD_5G_Network').text(iStr5G_Network);}
+		if ($('#idTD_5G_DIC_NCI').length > 0){$('#idTD_5G_DIC_NCI').text(iStr5G_DCI_NCU);}
+		
+		if ($('#idTD_5G_PCI').length > 0){
+			//$('#idTD_5G_PCI').text(iStr5G_PCI);
+			if(strArray5G_PCI.length > 0){$('#idTD_5G_PCI').text(strArray5G_PCI[0].trim());}
+			else {$('#idTD_5G_PCI').text(iStr5G_PCI);}
+		}
+		
+		if ($('#idP_Band5G').length > 0){
+			if(strArray5G_BAND.length > 0){$('#idP_Band5G').text(strArray5G_BAND[0].trim());}
+			else {$('#idP_Band5G').text(iStr5G_BAND);}
+		}
+		
+		if ($('#idP_Bandwidth5G').length > 0){
+			if(strArray5G_WBAND.length > 0){$('#idP_Bandwidth5G').text(strArray5G_WBAND[0].trim());}
+			else { $('#idP_Bandwidth5G').text(iStr5G_WBAND);}
+		}
+		
+		if ($('#idTD_5G_EARFCN').length > 0){
+			if(strArray5G_EARFCN.length > 0){$('#idTD_5G_EARFCN').text(strArray5G_EARFCN[0].trim());}
+			else {$('#idTD_5G_EARFCN').text(iStr5G_EARFCN);}
+		}
+		
+		if ($('#idP_5G_RSRP').length > 0){
+			if(strArray5G_RSRP.length > 0){$('#idP_5G_RSRP').text(strArray5G_RSRP[0].trim()+" dBm");}
+			else {$('#idP_5G_RSRP').text(iStr5G_RSRP+" dBm");}
+		}
+		
+		if ($('#idP_5G_RSRQ').length > 0){
+			if(strArray5G_RSRQ.length > 0){$('#idP_5G_RSRQ').text(strArray5G_RSRQ[0].trim()+" dB");}
+			else {$('#idP_5G_RSRQ').text(iStr5G_RSRQ+" dB");}
+		}
+		if ($('#idP_5G_SINR').length > 0){
+			if(strArray5G_SINR.length > 0){$('#idP_5G_SINR').text(strArray5G_SINR[0].trim()+" dB");}
+			else {$('#idP_5G_SINR').text(iStr5G_SINR+" dB");}
+		}
+		
+		if ($('#idTD_5G_Signal').length > 0){$('#idTD_5G_Signal').text(iStr5G_SIG);}
+		
+		if ($('#idTR_5G_PCell').length > 0)
+		{
+			var tableBgColor;
+			if(strArray5G_RSRP.length > 0) {tableBgColor = parseInt(strArray5G_RSRP[0]); }
+			else{ tableBgColor = parseInt(iStr5G_RSRP); }
+			
+			//console.log(">>>>tableBgColor="+tableBgColor);
+			if ((tableBgColor < -100) && (tableBgColor > -128))
+			{
+				$('#idTR_5G_PCell').attr('class','tableBgOrange');
+			}
+			else
+			{
+				$('#idTR_5G_PCell').attr('class','tableBgGreen');
+			}
+		}
+		
+		var SCell_5G_Number = parseInt($('#inP_5G_SCell_NU').val(), 10);
+		var loop5G=strArray5G_BAND.length-1;
+		$('#inP_5G_SCell_NU').val(loop5G);
+		if(SCell_5G_Number > loop5G)
+		{
+			loop5G=SCell_5G_Number
+		}
+		
+		//console.log(">>>>loop5G="+loop5G+" , len:"+strArray5G_BAND.length);
+		for (i=1;i<=loop5G ;i++ )
+		{
+			//console.log(">>>>loopScell="+i);
+			var tag="idTr_5GSCell_"+i;
+			var FindID="#"+tag;
+			if(i >= strArray5G_BAND.length)
+			{
+				//console.log(">>>>dellScell="+i);
+				if($(FindID).length > 0){ $(FindID).remove(); }
+			}
+			else
+			{
+				var iStrSCell5G_BAND=strArray5G_BAND[i].trim();
+				var iStrSCell5G_PCI=strArray5G_PCI[0].trim();
+				var iStrSCell5G_WBAND=strArray5G_WBAND[0].trim();
+				var iStrSCell5G_EARFCN=strArray5G_EARFCN[0].trim();
+				var iStrSCell5G_RSRP=strArray5G_RSRP[0].trim();
+				var iStrSCell5G_RSRQ=strArray5G_RSRQ[0].trim();
+				var iStrSCell5G_SINR=strArray5G_SINR[0].trim();
+		
+				if(strArray5G_PCI.length > i){iStrSCell5G_PCI=strArray5G_PCI[i].trim();}
+				if(strArray5G_WBAND.length > i){iStrSCell5G_WBAND=strArray5G_WBAND[i].trim();}
+				if(strArray5G_EARFCN.length > i){iStrSCell5G_EARFCN=strArray5G_EARFCN[i].trim();}
+				if(strArray5G_RSRP.length > i){iStrSCell5G_RSRP=strArray5G_RSRP[i].trim();}
+				if(strArray5G_RSRQ.length > i){iStrSCell5G_RSRQ=strArray5G_RSRQ[i].trim();}
+				if(strArray5G_SINR.length > i){iStrSCell5G_SINR=strArray5G_SINR[i].trim();}
+				
+				if($(FindID).length > 0)
+				{
+					//console.log(">>>>update Scell="+i);
+					
+					var tagS_BAND="id_5GSCell_TD_B"+i;
+					var tagS_WBAND="id_5GSCell_TD_W"+i;
+					var tagS_EARFCN="id_5GSCell_TD_E"+i;
+					var tagS_RSRP="id_5GSCell_TD_P"+i;
+					var tagS_RSRQ="id_5GSCell_TD_Q"+i;
+					var tagS_SINR="id_5GSCell_TD_R"+i;
+					
+					var FindSID_Network="#"+"id_5GSCell_TD_N"+i;
+					var FindSID_DICNCI="#"+"id_5GSCell_TD_D"+i;
+					var FindSID_PCI="#"+"id_5GSCell_TD_I"+i;
+					
+					var FindSID_BAND="#"+tagS_BAND;
+					var FindSID_WBAND="#"+tagS_WBAND;
+					var FindSID_EARFCN="#"+tagS_EARFCN;
+					var FindSID_RSRP="#"+tagS_RSRP;
+					var FindSID_RSRQ="#"+tagS_RSRQ;
+					var FindSID_SINR="#"+tagS_SINR;
+					
+					if($(FindSID_Network).length > 0){ $(FindSID_Network).text(iStr5G_Network); }
+					if($(FindSID_DICNCI).length > 0){ $(FindSID_DICNCI).text(iStr5G_DCI_NCU); }
+					if($(FindSID_PCI).length > 0){ $(FindSID_PCI).text(iStrSCell5G_PCI); }
+					
+					if($(FindSID_BAND).length > 0){ $(FindSID_BAND).text(iStrSCell5G_BAND); }
+					if($(FindSID_WBAND).length > 0){ $(FindSID_WBAND).text(iStrSCell5G_WBAND); }
+					if($(FindSID_EARFCN).length > 0){ $(FindSID_EARFCN).text(iStrSCell5G_EARFCN); }
+					if($(FindSID_RSRP).length > 0){ $(FindSID_RSRP).text(iStrSCell5G_RSRP+" dBm"); }
+					if($(FindSID_RSRQ).length > 0){ $(FindSID_RSRQ).text(iStrSCell5G_RSRQ+" dB"); }
+					if($(FindSID_SINR).length > 0){ $(FindSID_SINR).text(iStrSCell5G_SINR+" dB"); }
+				}
+				else
+				{
+					//console.log(">>>>add 5GScell="+i);
+					$("#idtbody_5GCell").append(
+						'<tr class="tableBgWhite" id="idTr_5GSCell_'+i+'" >\
+						<td data-label="Cell" id="id_5GSCell_TD_C'+i+'" >SCell</td>\
+						<td data-label="Network" id="id_5GSCell_TD_N'+i+'">'+iStr5G_Network+'</td>\
+						<td data-label="DIC/ NCI" id="id_5GSCell_TD_D'+i+'">'+iStr5G_DCI_NCU+'</td>\
+						<td data-label="PCI" id="id_5GSCell_TD_I'+i+'">'+iStrSCell5G_PCI+'</td>\
+						<td data-label="Band/ Bandwidth">\
+						<p Align="Center" id="id_5GSCell_TD_B'+i+'">'+iStrSCell5G_BAND+'</p>\
+						<p Align="Center" id="id_5GSCell_TD_W'+i+'">'+iStrSCell5G_WBAND+'</p>\
+						</td>\
+						<td data-label="EARFCN/NR-ARFCN" id="id_5GSCell_TD_E'+i+'">'+iStrSCell5G_EARFCN+'</td>\
+						<td data-label="RSRP/RSRQ/SINR">\
+						<p Align="Center" id="id_5GSCell_TD_P'+i+'">'+iStrSCell5G_RSRP+' dBm </p>\
+						<p Align="Center" id="id_5GSCell_TD_Q'+i+'">'+iStrSCell5G_RSRQ+' dB</p>\
+						<p Align="Center" id="id_5GSCell_TD_R'+i+'">'+iStrSCell5G_SINR+' dB</p>\
+						</td>\
+						<td data-label="Signal" ></td>\
+						</tr>'
+					);
+				}
+			}
+		}
+		
+	}
+	
+	
+	
+  $(function () {
+    new AccordionMenu({ menuArrs: mainMenu });
+    getsubMenu();
+    mobileNetworkMenu_active();
+    mainMenu_linkage();
+    setCellValue();
+    
+    StatusReloadTimer();
+  });
+</script>
+<!-- #ENDZONE output_javascript_zone -->
+
+</html>

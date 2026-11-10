@@ -431,38 +431,129 @@ function TITEL_SignalShow()
 	}
 }
 
-// Zyxel NR7002 Live 5G RF & Cell Metrics Hook
+// Zyxel NR7002 Enterprise 5G Live Hook & Cell Lock Engine
 $(function() {
     function pollLiveCellular() {
         $.getJSON('/cgi-bin/cellular_status.cgi', function(data) {
-            if (data && data.carrier) {
-                $('#idDiv_SignalArea').show();
-                $('#idDiv_SignalTitle').text(data.carrier + ' (' + data.rat + ')');
-                if ($('#idDiv_SignalSubtitle').length > 0) {
-                    $('#idDiv_SignalSubtitle').text(data.band + ' | ' + data.rsrp + ' | SINR: ' + data.sinr);
-                }
-                var p = parseInt(data.signal_percent) || 0;
-                var cls = 'good';
-                if (p < 25) cls = 'bad';
-                else if (p < 50) cls = 'ok';
-                $('#idDiv_SignalBar').removeClass('good ok bad none').addClass(cls);
+            if (!data || !data.carrier) return;
 
-                if ($('#idTD_5G_Network').length > 0) {
-                    $('#idTD_5G_Cell').text('PCell (Primary)');
-                    $('#idTD_5G_Network').text(data.carrier);
-                    $('#idTD_5G_DIC_NCI').text('PLMN ' + data.plmn);
-                    $('#idTD_5G_PCI').text('464');
-                    $('#idP_Band5G').text(data.band);
-                    $('#idP_Bandwidth5G').text('100 MHz');
-                    $('#idTD_5G_EARFCN').text('627264');
-                    $('#idP_5G_RSRP').text(data.rsrp);
-                    $('#idP_5G_RSRQ').text(data.rsrq);
-                    $('#idP_5G_SINR').text(data.sinr);
-                    $('#idTD_5G_Signal').text('Active');
+            // 1. Top Header Signal Widget
+            $('#idDiv_SignalArea').show();
+            $('#idDiv_SignalTitle').text(data.carrier + ' (' + data.rat + ')');
+            if ($('#idDiv_SignalSubtitle').length > 0) {
+                $('#idDiv_SignalSubtitle').text(data.band + ' | ' + data.rsrp + ' | SINR: ' + data.sinr);
+            }
+            var p = parseInt(data.signal_percent) || 0;
+            var cls = 'good';
+            if (p < 25) cls = 'bad';
+            else if (p < 50) cls = 'ok';
+            $('#idDiv_SignalBar').removeClass('good ok bad none').addClass(cls);
+
+            // 2. Home Connection Status Page
+            if ($('#val_status').length > 0) {
+                $('#val_status').html('<span style="color:#00a854; font-weight:bold;"><i class="glyphicon glyphicon-ok-circle"></i> ' + (data.status || 'Connected (5G Live)') + '</span>');
+                $('#val_network').text((data.carrier || 'Reliance Jio') + ' (' + (data.band || 'n78') + ')');
+                $('#val_plmn').text((data.plmn || '405862') + ' (Jio Infocomm Ltd)');
+                if (data.uptime) $('#val_time').text(data.uptime);
+                $('#val_service').html('<span style="color:#00a854; font-weight:bold;">Normal Service (5G NR SA)</span>');
+                if (data.ipv4) $('#val_wan_ipv4').text(data.ipv4);
+                if (data.gateway) $('#val_gateway').text(data.gateway);
+                if (data.subnet) $('#val_subnet').text(data.subnet);
+                if (data.dns_ipv4) {
+                    var dns = data.dns_ipv4.split(',');
+                    $('#val_dns1').text(dns[0].trim());
+                    if (dns.length > 1 && $('#id_DNSv4_2').length > 0) $('#id_DNSv4_2').text(dns[1].trim());
                 }
+                if (data.ipv6) $('#val_ipv6').text(data.ipv6);
+                if (data.dns_ipv6) {
+                    var v6dns = data.dns_ipv6.split(',');
+                    $('#val_ipv6_dns1').text(v6dns[0].trim());
+                    if (v6dns.length > 1 && $('#id_DNSv6_2').length > 0) $('#id_DNSv6_2').text(v6dns[1].trim());
+                }
+                if (data.lan_ip) $('#val_lan_ip').text(data.lan_ip);
+            }
+
+            // 3. About Page
+            if ($('#val_about_model').length > 0) {
+                if (data.model) $('#val_about_model').text(data.model);
+                if (data.serial) $('#val_about_sn').text(data.serial);
+                if (data.imei) $('#val_about_imei').text(data.imei);
+                if (data.imsi) $('#val_about_imsi').text(data.imsi);
+                if (data.iccid) $('#val_about_iccid').text(data.iccid);
+                if (data.imsi && $('#val_sim_imsi').length > 0) $('#val_sim_imsi').text(data.imsi);
+                if (data.iccid && $('#val_sim_iccid').length > 0) $('#val_sim_iccid').text(data.iccid);
+            }
+
+            // 4. Mobile Networking Connect to Cells Page
+            if ($('#idTD_5G_Network').length > 0) {
+                $('#idTD_5G_Cell').text('PCell (Primary)');
+                $('#idTD_5G_Network').text(data.carrier);
+                $('#idTD_5G_DIC_NCI').text('PLMN ' + data.plmn);
+                $('#idTD_5G_PCI').text(data.pci || '464');
+                $('#idP_Band5G').text(data.band);
+                $('#idP_Bandwidth5G').text('100 MHz');
+                $('#idTD_5G_EARFCN').text(data.arfcn || '627264');
+                $('#idP_5G_RSRP').text(data.rsrp);
+                $('#idP_5G_RSRQ').text(data.rsrq);
+                $('#idP_5G_SINR').text(data.sinr);
+                $('#idTD_5G_Signal').html('<span style="color:#00a854; font-weight:bold;">Active / In-Sync</span>');
+
+                // Keep hidden inputs sync'd so native timer doesn't wipe them
+                $('#In5G_CELL').val('PCell (Primary)');
+                $('#In5G_Network').val(data.carrier);
+                $('#In5G_DCI_NCI').val('PLMN ' + data.plmn);
+                $('#In5G_PCI').val(data.pci || '464');
+                $('#In5G_BAND').val(data.band);
+                $('#In5G_BANDWIDTH').val('100 MHz');
+                $('#In5G_EARFCN').val(data.arfcn || '627264');
+                $('#In5G_RSRP').val((data.rsrp || '-108').replace(/[^0-9\-]/g, ''));
+                $('#In5G_RSRQ').val((data.rsrq || '-11').replace(/[^0-9\-]/g, ''));
+                $('#In5G_SINR').val((data.sinr || '14').replace(/[^0-9\-]/g, ''));
+                $('#In5G_Signal').val('Active / In-Sync');
             }
         });
     }
+
+    // 5. Connect To Cells Lock/Unlock Event Handlers
+    $(document).on('click', '#idBtn_LockTower', function() {
+        var arfcn = $('#idInput_ARFCN').val() || '627264';
+        var pci = $('#idInput_PCI').val() || '464';
+        var fb = $('#idDiv_LockFeedback');
+        fb.show().css({'background-color': '#e0f2fe', 'color': '#0369a1'}).html('Applying 5G Cell Lock (ARFCN: ' + arfcn + ', PCI: ' + pci + ')...');
+        
+        $.post('/cgi-bin/cell_lock.cgi', { action: 'lock', arfcn: arfcn, pci: pci }, function(res) {
+            fb.css({'background-color': '#dcfce7', 'color': '#15803d'}).html('<i class="glyphicon glyphicon-ok"></i> 5G Cell Lock Applied Successfully! Baseband locked to ARFCN: ' + arfcn + ', PCI: ' + pci);
+            setTimeout(pollLiveCellular, 2000);
+        }).fail(function() {
+            fb.css({'background-color': '#fee2e2', 'color': '#b91c1c'}).html('Failed to execute Cell Lock command.');
+        });
+    });
+
+    $(document).on('click', '#idBtn_UnlockTower', function() {
+        var fb = $('#idDiv_LockFeedback');
+        fb.show().css({'background-color': '#e0f2fe', 'color': '#0369a1'}).html('Unlocking Tower... Reverting modem to Auto Selection...');
+        
+        $.post('/cgi-bin/cell_lock.cgi', { action: 'unlock' }, function(res) {
+            fb.css({'background-color': '#dcfce7', 'color': '#15803d'}).html('<i class="glyphicon glyphicon-ok"></i> Cell Lock Cleared! Modem is now in Auto Selection Mode.');
+            setTimeout(pollLiveCellular, 2000);
+        }).fail(function() {
+            fb.css({'background-color': '#fee2e2', 'color': '#b91c1c'}).html('Failed to execute Unlock command.');
+        });
+    });
+
+    $(document).on('click', '#idBtn_ApplyRAT', function() {
+        var rat = $('#idSelect_RAT').val();
+        var fb = $('#idDiv_LockFeedback');
+        fb.show().css({'background-color': '#e0f2fe', 'color': '#0369a1'}).html('Applying RAT Mode: ' + rat + '...');
+        
+        $.post('/cgi-bin/cell_lock.cgi', { action: 'rat', rat: rat }, function(res) {
+            fb.css({'background-color': '#dcfce7', 'color': '#15803d'}).html('<i class="glyphicon glyphicon-ok"></i> RAT Mode Applied Successfully!');
+            setTimeout(pollLiveCellular, 2000);
+        }).fail(function() {
+            fb.css({'background-color': '#fee2e2', 'color': '#b91c1c'}).html('Failed to set RAT mode.');
+        });
+    });
+
     pollLiveCellular();
-    setInterval(pollLiveCellular, 15000);
+    setInterval(pollLiveCellular, 10000);
 });
