@@ -1,0 +1,24 @@
+#!/bin/sh /etc/rc.common
+# Network ADB (adbd_usb listening on TCP) for this ODU.
+START=99
+STOP=99
+
+start() {
+# uci settings consumed by adbd_usb
+uci set usb.adb.service_adb_enable='1' 2>/dev/null
+uci set usb.adb.service_adb_tcp_port='5555' 2>/dev/null
+uci commit usb 2>/dev/null
+
+mkdir -p /data/misc/adb
+[ -f /data/misc/adb/adb_keys ] || : > /data/misc/adb/adb_keys
+chmod 600 /data/misc/adb/adb_keys 2>/dev/null
+
+killall adbd_usb 2>/dev/null
+sleep 1
+SHELL=/bin/ash HOME=/ /sbin/adbd_usb >/dev/null 2>&1 &
+sleep 2
+}
+
+stop() {
+killall adbd_usb 2>/dev/null
+}
